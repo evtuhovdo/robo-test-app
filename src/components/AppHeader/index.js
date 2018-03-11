@@ -23,7 +23,7 @@ const AppHeader = (props) => {
 
   return (
     <header>
-      <Typography variant="display1" gutterBottom>
+      <Typography variant="headline" gutterBottom>
         <Link to="/" className={classes.link}>
           <BookIcon color="primary" className={classes.icon} />
         </Link>

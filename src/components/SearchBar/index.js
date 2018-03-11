@@ -8,12 +8,22 @@ import { MenuItem } from 'material-ui/Menu';
 import { withStyles } from 'material-ui/styles';
 import isFunction from 'lodash/isFunction';
 import isUndefined from 'lodash/isUndefined';
+import slice from 'lodash/slice';
 import { connect } from 'react-redux';
 import { findSuggestionsByQuery } from './../../modules/redux/actions/googleBooksActions';
 
 import SearchInput from './includes/SearchInput';
 
 const MAX_SUGGESTIONS_RESULT_COUNT = 5;
+
+const style = {
+  matchText: {
+    ontWeight: 300,
+  },
+  otherText: {
+    ontWeight: 500,
+  },
+};
 
 function renderSuggestion(suggestion, { query, isHighlighted }) {
   const matches = match(suggestion.title, query);
@@ -25,14 +35,14 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
         {parts.map((part, index) => {
           if (part.highlight) {
             return (
-              <span key={String(index)} style={{ fontWeight: 300 }}>
+              <span key={String(index)} style={style.matchText}>
                 {part.text}
               </span>
             );
           }
 
           return (
-            <strong key={String(index)} style={{ fontWeight: 500 }}>
+            <strong key={String(index)} style={style.otherText}>
               {part.text}
             </strong>
           );
@@ -93,14 +103,10 @@ class SearchBar extends React.Component {
   }
 
   componentWillReceiveProps = (nexProps) => {
-    // TODO: Пришедший результат не обязательно соответсвует this.state.value
-
-    console.log('nexProps', nexProps);
-
     const suggestions = this.getSuggestionsFromSearchResult(nexProps.searchResults, this.state.value);
 
     this.setState({
-      suggestions: suggestions,
+      suggestions,
     });
   };
 
@@ -119,7 +125,6 @@ class SearchBar extends React.Component {
 
     const inputValue = query.trim().toLowerCase();
     const inputLength = inputValue.length;
-    let count = 0;
 
     if (inputLength === 0) {
       return [];
@@ -127,20 +132,7 @@ class SearchBar extends React.Component {
 
     const { maxSuggestionsResultCount } = this.props;
 
-    console.log('maxSuggestionsResultCount', maxSuggestionsResultCount);
-
-    return searchResult.filter((suggestion) => {
-      if (count < maxSuggestionsResultCount) {
-        const keep = suggestion.title.toLowerCase().slice(0, inputLength) === inputValue;
-        if (keep) {
-          count += 1;
-        }
-
-        return keep;
-      }
-
-      return false;
-    });
+    return slice(searchResult, 0, maxSuggestionsResultCount);
   };
 
   handleSuggestionsFetchRequested = ({ value, reason }) => {
@@ -208,7 +200,6 @@ class SearchBar extends React.Component {
 }
 
 SearchBar.propTypes = {
-  onValueChange: PropTypes.func,
   initialValue: PropTypes.string,
   maxSuggestionsResultCount: PropTypes.number,
   onSearchDo: PropTypes.func,

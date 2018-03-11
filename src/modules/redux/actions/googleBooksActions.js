@@ -1,4 +1,4 @@
-import { search } from './../../googleBookApi';
+import { search, lookup } from './../../googleBookApi';
 
 import {
   BOOKS_SUGGESTIONS_FIND_BY_QUERY,
@@ -43,12 +43,13 @@ const getPageByQuery = (query, page = 1) => {
 
 const getBookById = volumeId => ({
   type: BOOKS_GET_BY_ID,
-  // payload: googleBookApi.lookup(volumeId),
+  payload: lookup(volumeId),
 });
 
 export {
   findSuggestionsByQuery,
   getPageByQuery,
   setPage,
+  getBookById,
 };
 

@@ -36,6 +36,10 @@ const styles = theme => ({
     width: '100%',
     maxWidth: 500,
   },
+  loading: {
+    width: '100%',
+    textAlign: 'center',
+  },
 });
 
 class SearchResultsList extends React.Component {
@@ -103,7 +107,12 @@ class SearchResultsList extends React.Component {
             maxSuggestionsResultCount={10}
           />
           <section
-            style={{ display: 'flex', flexDirection: 'column', paddingTop: 20, width: '100%' }}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              paddingTop: 20,
+              width: '100%',
+            }}
           >
             {currentTotal > 10 && (
               <Pagination
@@ -112,22 +121,24 @@ class SearchResultsList extends React.Component {
                 onChangePage={this.handleChangePage}
               />
             )}
-            {isPageFetching && <div style={{ width: '100%', textAlign: 'center' }}><CircularProgress /></div>}
+            {isPageFetching && (
+              <div className={classes.loading}>
+                <CircularProgress />
+              </div>
+            )}
             {!isPageFetching &&
               currentPageResult.length > 0 &&
               currentPageResult.map(bookData => (
-                <BookCard
-                  key={`BookCard-${bookData.id}`}
-                  book={bookData}
+                <BookCard key={`BookCard-${bookData.id}`} book={bookData} query={query} />
+                ))}
+            {!isPageFetching &&
+              currentTotal > 10 && (
+                <Pagination
+                  count={currentTotal}
+                  currentPage={currentPage - 1}
+                  onChangePage={this.handleChangePage}
                 />
-            ))}
-            {!isPageFetching && currentTotal > 10 && (
-              <Pagination
-                count={currentTotal}
-                currentPage={currentPage - 1}
-                onChangePage={this.handleChangePage}
-              />
-            )}
+              )}
             {!isPageFetching &&
               currentPageResult.length === 0 && (
                 <Typography component="div">

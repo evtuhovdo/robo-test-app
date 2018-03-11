@@ -63,11 +63,14 @@ const SearchInput = (props) => {
 SearchInput.propTypes = {
   onClearInputValue: PropTypes.func,
   onSearchDo: PropTypes.func,
+  value: PropTypes.string,
+  ref: PropTypes.string.isRequired,
 };
 
 SearchInput.defaultProps = {
   onClearInputValue: () => {},
   onSearchDo: () => {},
+  value: '',
 };
 
 export default SearchInput;

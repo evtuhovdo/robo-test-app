@@ -1,6 +1,7 @@
 import https from 'https';
 import querystring from 'querystring';
-import { pick, find } from 'lodash';
+import pick from 'lodash/pick';
+import isUndefined from 'lodash/isUndefined';
 
 // https://developers.google.com/books/docs/v1/using#st_params
 const defaultOptions = {
@@ -18,7 +19,7 @@ const defaultOptions = {
   order: 'relevance',
   // Restrict results to a specified language (two-letter ISO-639-1 code) (langRestrict)
   lang: 'en',
-  //projection: 'full',
+  // projection: 'full',
 };
 
 // Special Keywords
@@ -31,7 +32,8 @@ const fields = {
 };
 
 // Base url for Google Books API
-const baseUrl = 'https://www.googleapis.com/books/v1/volumes?';
+const searchBaseUrl = 'https://www.googleapis.com/books/v1/volumes?';
+const lookupBaseUrl = 'https://www.googleapis.com/books/v1/volumes/';
 
 /**
  * Search Google Books
@@ -64,7 +66,7 @@ const search = (_query, _options = {}) => {
     queryUrl.key = options.key;
   }
 
-  const uri = baseUrl + querystring.stringify(queryUrl);
+  const uri = searchBaseUrl + querystring.stringify(queryUrl);
 
   return new Promise(((resolve, reject) => {
     // Validate options
@@ -129,14 +131,6 @@ const search = (_query, _options = {}) => {
                 push.thumbnail = book.imageLinks.thumbnail;
               }
 
-              // ISBN
-              if (book.industryIdentifiers && book.industryIdentifiers.length > 0) {
-                const isbn13 = find(book.industryIdentifiers, item => item.type === 'ISBN_13', 'identifier');
-
-                if (isbn13) // try to get isbn13
-                { push.isbn = isbn13; } else { push.isbn = book.industryIdentifiers[0].identifier; }
-              }
-
               push.id = item.id;
 
               results.push(push);
@@ -152,6 +146,101 @@ const search = (_query, _options = {}) => {
   }));
 };
 
+const lookup = (id, _options = {}) => {
+  const options = { ...defaultOptions, ..._options };
+
+  const queryUrl = {};
+  if (options.key) {
+    queryUrl.key = options.key;
+  }
+
+  const uri = lookupBaseUrl + id + querystring.stringify(queryUrl);
+
+  return new Promise(((resolve, reject) => {
+    // Validate options
+    if (!id) {
+      reject(new Error('Id is required'));
+      return;
+    }
+
+    // TODO: REPLACE https by superagent
+    // Send Request
+    https.get(uri, (response) => {
+      if (response.statusCode && response.statusCode === 200) {
+        let body = '';
+        response.on('data', (data) => {
+          body += data;
+        });
+
+        response.on('end', () => {
+          // Parse response body
+          const data = JSON.parse(body);
+
+          // Array of JSON results to return
+          let result = {};
+
+          // Extract useful data
+          if (data.volumeInfo) {
+            const book = data.volumeInfo;
+
+            result = pick(book, [
+              'title',
+              'publisher',
+              'publishedDate',
+              'pageCount',
+              'printType',
+              'categories',
+              'language',
+              'infoLink',
+              'description',
+              'averageRating',
+              'ratingsCount',
+              'previewLink',
+            ]);
+
+            // Thumbnail
+            if (book.imageLinks && book.imageLinks.thumbnail) {
+              result.thumbnail = book.imageLinks.thumbnail;
+            }
+
+            // MediumImage
+            if (book.imageLinks && book.imageLinks.medium) {
+              result.mediumImage = book.imageLinks.medium;
+            }
+
+            // ISBN
+            if (book.industryIdentifiers && book.industryIdentifiers.length > 0) {
+              result.isbn = book.industryIdentifiers.map(item => item.identifier).join(', ');
+            }
+
+            // Authors
+            if (book.authors && book.authors.length > 0) {
+              result.authors = book.authors.join(', ');
+            }
+
+            // Categories
+            if (book.categories && book.categories.length > 0) {
+              result.categories = book.categories.join(', ');
+            }
+
+            result.id = data.id;
+
+            const { saleInfo } = data;
+
+            if (!isUndefined(saleInfo.buyLink)) {
+              result.buyLink = saleInfo.buyLink;
+            }
+          }
+          return resolve(result);
+        });
+      } else {
+        return reject(`Status Code: ${response.statusCode}`);
+      }
+    }).on('error', error => reject(error));
+  }));
+};
+
 export {
-  search
+  search,
+  lookup,
 };
