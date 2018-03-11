@@ -1,7 +1,6 @@
 import React from 'react';
 import { withStyles } from 'material-ui/styles';
 import Card, { CardHeader, CardMedia, CardContent, CardActions } from 'material-ui/Card';
-import { Link } from 'react-router-dom';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
 import Parser from 'html-react-parser';
@@ -38,6 +37,10 @@ const styles = theme => ({
   rating: {
     position: 'relative',
     left: -2,
+  },
+  link: {
+    color: 'inherit',
+    textDecoration: 'none',
   },
 });
 
@@ -142,10 +145,10 @@ const SingleBookCard = (props) => {
         {!isUndefined(buyLink) && isString(buyLink) && buyLink.length > 0 && (
           <Button
             color="secondary"
-            component={Link}
-            to={buyLink}
           >
-            <ShoppingCartIcon /> Buy
+            <a href={buyLink} rel="noopener" target="_blank" className={classes.link}>
+              <ShoppingCartIcon /> Buy
+            </a>
           </Button>
         )}
       </CardActions>
