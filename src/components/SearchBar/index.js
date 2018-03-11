@@ -7,64 +7,36 @@ import Paper from 'material-ui/Paper';
 import { MenuItem } from 'material-ui/Menu';
 import { withStyles } from 'material-ui/styles';
 import isFunction from 'lodash/isFunction';
+import isUndefined from 'lodash/isUndefined';
+import { connect } from 'react-redux';
+import { findSuggestionsByQuery } from './../../modules/redux/actions/googleBooksActions';
 
 import SearchInput from './includes/SearchInput';
 
 const MAX_SUGGESTIONS_RESULT_COUNT = 5;
 
-const suggestions = [
-  { label: 'Afghanistan' },
-  { label: 'Aland Islands' },
-  { label: 'Albania' },
-  { label: 'Algeria' },
-  { label: 'American Samoa' },
-  { label: 'Andorra' },
-  { label: 'Angola' },
-  { label: 'Anguilla' },
-  { label: 'Antarctica' },
-  { label: 'Antigua and Barbuda' },
-  { label: 'Argentina' },
-  { label: 'Armenia' },
-  { label: 'Aruba' },
-  { label: 'Australia' },
-  { label: 'Austria' },
-  { label: 'Azerbaijan' },
-  { label: 'Bahamas' },
-  { label: 'Bahrain' },
-  { label: 'Bangladesh' },
-  { label: 'Barbados' },
-  { label: 'Belarus' },
-  { label: 'Belgium' },
-  { label: 'Belize' },
-  { label: 'Benin' },
-  { label: 'Bermuda' },
-  { label: 'Bhutan' },
-  { label: 'Bolivia, Plurinational State of' },
-  { label: 'Bonaire, Sint Eustatius and Saba' },
-  { label: 'Bosnia and Herzegovina' },
-  { label: 'Botswana' },
-  { label: 'Bouvet Island' },
-  { label: 'Brazil' },
-  { label: 'British Indian Ocean Territory' },
-  { label: 'Brunei Darussalam' },
-];
-
 function renderSuggestion(suggestion, { query, isHighlighted }) {
-  const matches = match(suggestion.label, query);
-  const parts = parse(suggestion.label, matches);
+  const matches = match(suggestion.title, query);
+  const parts = parse(suggestion.title, matches);
 
   return (
     <MenuItem selected={isHighlighted} component="div">
       <div>
-        {parts.map((part, index) => (part.highlight ? (
-          <span key={String(index)} style={{ fontWeight: 300 }}>
-            {part.text}
-          </span>
-          ) : (
+        {parts.map((part, index) => {
+          if (part.highlight) {
+            return (
+              <span key={String(index)} style={{ fontWeight: 300 }}>
+                {part.text}
+              </span>
+            );
+          }
+
+          return (
             <strong key={String(index)} style={{ fontWeight: 500 }}>
               {part.text}
             </strong>
-          )))}
+          );
+        })}
       </div>
     </MenuItem>
   );
@@ -81,30 +53,7 @@ function renderSuggestionsContainer(options) {
 }
 
 function getSuggestionValue(suggestion) {
-  return suggestion.label;
-}
-
-function getSuggestions(value) {
-  const inputValue = value.trim().toLowerCase();
-  const inputLength = inputValue.length;
-  let count = 0;
-
-  if (inputLength === 0) {
-    return [];
-  }
-
-  return suggestions.filter((suggestion) => {
-    if (count < MAX_SUGGESTIONS_RESULT_COUNT) {
-      const keep = suggestion.label.toLowerCase().slice(0, inputLength) === inputValue;
-      if (keep) {
-        count += 1;
-      }
-
-      return keep;
-    }
-
-    return false;
-  });
+  return suggestion.title;
 }
 
 const styles = theme => ({
@@ -133,16 +82,73 @@ const styles = theme => ({
   },
 });
 
-class IntegrationAutoSuggest extends React.Component {
-  state = {
-    value: '',
-    suggestions: [],
+class SearchBar extends React.Component {
+  constructor(props) {
+    super();
+
+    this.state = {
+      value: props.initialValue,
+      suggestions: [],
+    };
+  }
+
+  componentWillReceiveProps = (nexProps) => {
+    // TODO: Пришедший результат не обязательно соответсвует this.state.value
+
+    console.log('nexProps', nexProps);
+
+    const suggestions = this.getSuggestionsFromSearchResult(nexProps.searchResults, this.state.value);
+
+    this.setState({
+      suggestions: suggestions,
+    });
   };
 
-  handleSuggestionsFetchRequested = ({ value }) => {
-    this.setState({
-      suggestions: getSuggestions(value),
+  onSearchDo = () => {
+    const { onSearchDo } = this.props;
+    const { value } = this.state;
+    if (isFunction(onSearchDo)) {
+      onSearchDo(value);
+    }
+  };
+
+  getSuggestionsFromSearchResult = (searchResult, query) => {
+    if (isUndefined(query) || isUndefined(searchResult)) {
+      return [];
+    }
+
+    const inputValue = query.trim().toLowerCase();
+    const inputLength = inputValue.length;
+    let count = 0;
+
+    if (inputLength === 0) {
+      return [];
+    }
+
+    const { maxSuggestionsResultCount } = this.props;
+
+    console.log('maxSuggestionsResultCount', maxSuggestionsResultCount);
+
+    return searchResult.filter((suggestion) => {
+      if (count < maxSuggestionsResultCount) {
+        const keep = suggestion.title.toLowerCase().slice(0, inputLength) === inputValue;
+        if (keep) {
+          count += 1;
+        }
+
+        return keep;
+      }
+
+      return false;
     });
+  };
+
+  handleSuggestionsFetchRequested = ({ value, reason }) => {
+    if (reason === 'input-changed') {
+      // TODO: Debounce
+      const { getSuggest } = this.props;
+      getSuggest(value);
+    }
   };
 
   handleSuggestionsClearRequested = () => {
@@ -164,12 +170,10 @@ class IntegrationAutoSuggest extends React.Component {
     });
   };
 
-  onSearchDo = () => {
-    const { onSearchDo } = this.props;
-    const { value } = this.state;
-    if (isFunction(onSearchDo)) {
-      onSearchDo(value);
-    }
+  handleSuggestionSelected = (event, { suggestion }) => {
+    this.setState({
+      value: suggestion.title,
+    }, this.onSearchDo);
   };
 
   render() {
@@ -188,6 +192,7 @@ class IntegrationAutoSuggest extends React.Component {
         onSuggestionsFetchRequested={this.handleSuggestionsFetchRequested}
         onSuggestionsClearRequested={this.handleSuggestionsClearRequested}
         renderSuggestionsContainer={renderSuggestionsContainer}
+        onSuggestionSelected={this.handleSuggestionSelected}
         getSuggestionValue={getSuggestionValue}
         renderSuggestion={renderSuggestion}
         inputProps={{
@@ -202,8 +207,12 @@ class IntegrationAutoSuggest extends React.Component {
   }
 }
 
-IntegrationAutoSuggest.propTypes = {
+SearchBar.propTypes = {
+  onValueChange: PropTypes.func,
+  initialValue: PropTypes.string,
+  maxSuggestionsResultCount: PropTypes.number,
   onSearchDo: PropTypes.func,
+  getSuggest: PropTypes.func,
   classes: PropTypes.shape({
     container: PropTypes.string.isRequired,
     suggestionsContainerOpen: PropTypes.string.isRequired,
@@ -212,8 +221,20 @@ IntegrationAutoSuggest.propTypes = {
   }).isRequired,
 };
 
-IntegrationAutoSuggest.defaultProps = {
+SearchBar.defaultProps = {
   onSearchDo: () => {},
+  getSuggest: () => {},
+  initialValue: '',
+  maxSuggestionsResultCount: MAX_SUGGESTIONS_RESULT_COUNT,
 };
 
-export default withStyles(styles)(IntegrationAutoSuggest);
+const mapStateToProps = state => ({
+  searchResults: state.googleBooks.suggestionSearchResults,
+  isFetching: state.googleBooks.isSuggestionFetching,
+});
+
+const mapDispatchToProps = dispatch => ({
+  getSuggest: query => dispatch(findSuggestionsByQuery(query)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(SearchBar));

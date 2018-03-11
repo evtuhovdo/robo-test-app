@@ -1,12 +1,12 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import Typography from 'material-ui/Typography';
 import { withStyles } from 'material-ui/styles';
-import { withRouter } from 'react-router';
-import ReactRouterPropTypes from 'react-router-prop-types';
+import Button from 'material-ui/Button';
+import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 import AppHeader from './../../components/AppHeader';
-import withRoot from './../../hoc/withRoot';
-import SearchBar from './../../components/SearchBar';
+import withRoot from '../../hoc/withRoot';
 
 const styles = theme => ({
   root: {
@@ -15,11 +15,11 @@ const styles = theme => ({
     alignItems: 'center',
     minHeight: '100vh',
     justifyContent: 'flex-start',
-    paddingTop: theme.spacing.unit * 15,
+    padding: `${theme.spacing.unit * 15}px ${theme.spacing.unit * 2}px 0 ${theme.spacing.unit * 2}px`,
   },
   main: {
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     padding: `0 ${theme.spacing.unit * 2}px`,
@@ -28,13 +28,7 @@ const styles = theme => ({
   },
 });
 
-class FullPageSearch extends React.Component {
-  handleSearch = (value) => {
-    const { history } = this.props;
-
-    history.push(`/search/${value}`);
-  };
-
+class PageNotFound extends React.Component {
   render() {
     const { classes } = this.props;
 
@@ -42,19 +36,26 @@ class FullPageSearch extends React.Component {
       <div className={classes.root}>
         <AppHeader />
         <main className={classes.main}>
-          <SearchBar onSearchDo={this.handleSearch} />
+          <header>
+            <Typography gutterBottom>
+              Whoops, we can`t find that page!
+            </Typography>
+          </header>
+          <br /><br />
+          <Button variant="raised" color="secondary" component={Link} to="/">
+            Back to main page
+          </Button>
         </main>
       </div>
     );
   }
 }
 
-FullPageSearch.propTypes = {
-  history: ReactRouterPropTypes.history.isRequired,
+PageNotFound.propTypes = {
   classes: PropTypes.shape({
     root: PropTypes.string.isRequired,
     main: PropTypes.string.isRequired,
   }).isRequired,
 };
 
-export default withRouter(withRoot(withStyles(styles)(FullPageSearch)));
+export default withRoot(withStyles(styles)(PageNotFound));

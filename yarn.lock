@@ -8,6 +8,10 @@
   dependencies:
     csstype "^1.6.0"
 
+"@types/prop-types@^15.5.2":
+  version "15.5.2"
+  resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.5.2.tgz#3c6b8dceb2906cc87fe4358e809f9d20c8d59be1"
+
 "@types/react-transition-group@^2.0.6":
   version "2.0.7"
   resolved "https://registry.yarnpkg.com/@types/react-transition-group/-/react-transition-group-2.0.7.tgz#2847292d54c5685d982ae5a3ecb6960946689d87"
@@ -3421,6 +3425,10 @@ https-browserify@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/https-browserify/-/https-browserify-1.0.0.tgz#ec06c10e0a34c0f2faf199f7fd7fc78fffd03c73"
 
+https@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/https/-/https-1.0.0.tgz#3c37c7ae1a8eeb966904a2ad1e975a194b7ed3a4"
+
 hyphenate-style-name@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/hyphenate-style-name/-/hyphenate-style-name-1.0.2.tgz#31160a36930adaf1fc04c6074f7eb41465d4ec4b"
@@ -5021,8 +5029,8 @@ object.pick@^1.3.0:
     isobject "^3.0.1"
 
 obuf@^1.0.0, obuf@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.1.tgz#104124b6c602c6796881a042541d36db43a5264e"
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.2.tgz#09bea3343d41859ebd446292d11c9d4db619084e"
 
 on-finished@~2.3.0:
   version "2.3.0"
@@ -5729,7 +5737,7 @@ querystring-es3@^0.2.0:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/querystring-es3/-/querystring-es3-0.2.1.tgz#9ec61f79049875707d69414596fd907a4d711e73"
 
-querystring@0.2.0:
+querystring@0.2.0, querystring@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/querystring/-/querystring-0.2.0.tgz#b209849203bb25df820da756e747005878521620"
 
@@ -5804,8 +5812,8 @@ react-autosuggest@~9.3.4:
     shallow-equal "^1.0.0"
 
 react-autowhatever@^10.1.0:
-  version "10.1.0"
-  resolved "https://registry.yarnpkg.com/react-autowhatever/-/react-autowhatever-10.1.0.tgz#41f6d69382437d3447a0a3c8913bb8ca2feaabc1"
+  version "10.1.1"
+  resolved "https://registry.yarnpkg.com/react-autowhatever/-/react-autowhatever-10.1.1.tgz#ee938c068d38fc2b7781755e663032a30ed53656"
   dependencies:
     prop-types "^15.5.8"
     react-themeable "^1.1.0"
@@ -5877,6 +5885,10 @@ react-popper@^0.8.0:
     popper.js "^1.12.9"
     prop-types "^15.6.0"
 
+react-rating@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/react-rating/-/react-rating-1.0.6.tgz#6e832dca20312bb695c4b909e49848c6c7240b8d"
+
 react-redux@~5.0.6:
   version "5.0.7"
   resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-5.0.7.tgz#0dc1076d9afb4670f993ffaef44b8f8c1155a4c8"
@@ -5898,6 +5910,13 @@ react-router-dom@~4.2.2:
     prop-types "^15.5.4"
     react-router "^4.2.0"
     warning "^3.0.0"
+
+react-router-prop-types@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/react-router-prop-types/-/react-router-prop-types-1.0.0.tgz#3671d9d04f472a5ee272dc6a0ec5a093ed2d6277"
+  dependencies:
+    "@types/prop-types" "^15.5.2"
+    prop-types "^15.6.0"
 
 react-router-redux@next:
   version "5.0.0-alpha.9"
@@ -6093,6 +6112,10 @@ reduce-function-call@^1.0.1:
   resolved "https://registry.yarnpkg.com/reduce-function-call/-/reduce-function-call-1.0.2.tgz#5a200bf92e0e37751752fe45b0ab330fd4b6be99"
   dependencies:
     balanced-match "^0.4.2"
+
+redux-promise-middleware@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/redux-promise-middleware/-/redux-promise-middleware-5.0.0.tgz#1656b24f9ac962bf11fbe55ea8360810e18d47a7"
 
 redux-thunk@~2.2.0:
   version "2.2.0"
@@ -6764,7 +6787,7 @@ string-width@^2.0.0, string-width@^2.1.0, string-width@^2.1.1:
     is-fullwidth-code-point "^2.0.0"
     strip-ansi "^4.0.0"
 
-string_decoder@^1.0.0:
+string_decoder@^1.0.0, string_decoder@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/string_decoder/-/string_decoder-1.1.0.tgz#384f322ee8a848e500effde99901bba849c5d403"
   dependencies:
@@ -7088,8 +7111,8 @@ ua-parser-js@^0.7.9:
   resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.17.tgz#e9ec5f9498b9ec910e7ae3ac626a805c4d09ecac"
 
 uglify-js@3.3.x, uglify-js@^3.0.13:
-  version "3.3.13"
-  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.3.13.tgz#8a1a89eeb16e2d6a66b0db2b04cb871af3c669cf"
+  version "3.3.14"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.3.14.tgz#d3d84d18722ff342fa96029cca71c67367700079"
   dependencies:
     commander "~2.14.1"
     source-map "~0.6.1"
@@ -7328,8 +7351,8 @@ watchpack@^1.4.0:
     neo-async "^2.5.0"
 
 wbuf@^1.1.0, wbuf@^1.7.2:
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/wbuf/-/wbuf-1.7.2.tgz#d697b99f1f59512df2751be42769c1580b5801fe"
+  version "1.7.3"
+  resolved "https://registry.yarnpkg.com/wbuf/-/wbuf-1.7.3.tgz#c1d8d149316d3ea852848895cb6a0bfe887b87df"
   dependencies:
     minimalistic-assert "^1.0.0"
 
