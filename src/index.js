@@ -3,6 +3,7 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'react-router-redux';
 import 'sanitize.css/sanitize.css';
+import 'url-search-params-polyfill';
 
 import store, { history } from './modules/redux/store';
 import App from './containers/App';
